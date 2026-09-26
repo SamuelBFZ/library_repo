@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="sb.api.Library.Application/sb.api.Library.Application.csproj" />
+    <Project Path="sb.api.Library.Domain/sb.api.Library.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="sb.api.Library.Persistence/sb.api.Library.Persistence.csproj" />
+  </Folder>
+  <Folder Name="/Presenters/">
+    <Project Path="sb.api.Library/sb.api.Library.csproj" />
+  </Folder>
+  <Folder Name="/scripts/">
+    <File Path="ef.cmd" />
+  </Folder>
+</Solution>
