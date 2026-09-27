@@ -1,3 +1,5 @@
+using sb.api.Library.Domain.Exceptions;
+
 namespace sb.api.Library.Domain.Entities
 {
     public sealed class BookAuthor
@@ -14,6 +16,21 @@ namespace sb.api.Library.Domain.Entities
 
         public BookAuthor(Guid bookId, Guid authorId, int displayOrder)
         {
+            if (bookId == Guid.Empty)
+            {
+                throw new BussinesRuleException("El identificador del libro es requerido.");
+            }
+
+            if (authorId == Guid.Empty)
+            {
+                throw new BussinesRuleException("El identificador del autor es requerido.");
+            }
+
+            if (displayOrder < 1)
+            {
+                throw new BussinesRuleException("El orden de visualización del autor debe ser mayor o igual a 1.");
+            }
+
             BookId = bookId;
             AuthorId = authorId;
             DisplayOrder = displayOrder;

@@ -14,16 +14,6 @@ namespace sb.api.Library.Persistence.Configurations
 
             builder.Property(ba => ba.DisplayOrder)
                    .IsRequired();
-
-            builder.HasOne(ba => ba.Book)
-                   .WithMany(b => b.BookAuthors)
-                   .HasForeignKey(ba => ba.BookId)
-                   .OnDelete(DeleteBehavior.NoAction);
-
-            builder.HasOne(ba => ba.Author)
-                   .WithMany(a => a.BookAuthors)
-                   .HasForeignKey(ba => ba.AuthorId)
-                   .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

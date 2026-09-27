@@ -30,7 +30,7 @@ namespace sb.api.Library.Persistence.Configurations
 
             builder.Property(b => b.Synopsis);
 
-            builder.Property(b => b.CreatedAt)
+            builder.Property<DateTime>("CreatedAt")
                    .IsRequired();
 
             builder.HasIndex(b => b.Title);
@@ -38,6 +38,30 @@ namespace sb.api.Library.Persistence.Configurations
             builder.HasIndex(b => b.Isbn)
                    .IsUnique()
                    .HasFilter("[Isbn] IS NOT NULL");
+
+            builder.HasMany(b => b.Authors)
+                   .WithMany(a => a.Books)
+                   .UsingEntity<BookAuthor>(
+                       j => j.HasOne(ba => ba.Author)
+                             .WithMany(a => a.BookAuthors)
+                             .HasForeignKey(ba => ba.AuthorId)
+                             .OnDelete(DeleteBehavior.NoAction),
+                       j => j.HasOne(ba => ba.Book)
+                             .WithMany(b => b.BookAuthors)
+                             .HasForeignKey(ba => ba.BookId)
+                             .OnDelete(DeleteBehavior.NoAction));
+
+            builder.HasMany(b => b.Categories)
+                   .WithMany(c => c.Books)
+                   .UsingEntity<BookCategory>(
+                       j => j.HasOne(bc => bc.Category)
+                             .WithMany(c => c.BookCategories)
+                             .HasForeignKey(bc => bc.CategoryId)
+                             .OnDelete(DeleteBehavior.NoAction),
+                       j => j.HasOne(bc => bc.Book)
+                             .WithMany(b => b.BookCategories)
+                             .HasForeignKey(bc => bc.BookId)
+                             .OnDelete(DeleteBehavior.NoAction));
         }
     }
 }
