@@ -7,6 +7,7 @@ namespace sb.api.Library.Domain.Entities
         public Guid Id { get; private set; }
         public string Name { get; private set; } = null!;
         public string? Description { get; private set; }
+        public ICollection<Book> Books { get; private set; } = new List<Book>();
         public ICollection<BookCategory> BookCategories { get; private set; } = new List<BookCategory>();
 
         private Category()
@@ -23,16 +24,6 @@ namespace sb.api.Library.Domain.Entities
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new BussinesRuleException("El nombre de la categoría es requerido.");
-            }
-
-            if (name.Trim().Length > 128)
-            {
-                throw new BussinesRuleException("El nombre de la categoría debe tener máximo 128 caracteres.");
-            }
-
-            if (description is not null && description.Length > 1024)
-            {
-                throw new BussinesRuleException("La descripción de la categoría debe tener máximo 1024 caracteres.");
             }
 
             Id = id;

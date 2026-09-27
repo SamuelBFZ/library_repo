@@ -20,5 +20,48 @@ namespace sb.api.Library.Persistence
             builder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
             base.OnModelCreating(builder);
         }
+
+        public override int SaveChanges()
+        {
+            SetCreatedAt();
+            return base.SaveChanges();
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            SetCreatedAt();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            SetCreatedAt();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            SetCreatedAt();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void SetCreatedAt()
+        {
+            foreach (var entry in ChangeTracker.Entries<Book>())
+            {
+                if (entry.State != EntityState.Added)
+                {
+                    continue;
+                }
+
+                var createdAt = entry.Property("CreatedAt");
+                if (createdAt.CurrentValue is DateTime value && value != default)
+                {
+                    continue;
+                }
+
+                createdAt.CurrentValue = DateTime.UtcNow;
+            }
+        }
     }
 }

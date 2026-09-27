@@ -9,6 +9,7 @@ namespace sb.api.Library.Domain.Entities
         public string LastName { get; private set; } = null!;
         public string? Biography { get; private set; }
         public DateOnly? BirthDate { get; private set; }
+        public ICollection<Book> Books { get; private set; } = new List<Book>();
         public ICollection<BookAuthor> BookAuthors { get; private set; } = new List<BookAuthor>();
 
         private Author()
@@ -22,27 +23,21 @@ namespace sb.api.Library.Domain.Entities
 
         public Author(Guid id, string firstName, string lastName, string? biography = null, DateOnly? birthDate = null)
         {
-            ApplyNameRules(firstName, "El nombre del autor es requerido.", "El nombre del autor");
-            ApplyNameRules(lastName, "El apellido del autor es requerido.", "El apellido del autor");
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new BussinesRuleException("El nombre del autor es requerido.");
+            }
+
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new BussinesRuleException("El apellido del autor es requerido.");
+            }
 
             Id = id;
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
             Biography = biography;
             BirthDate = birthDate;
-        }
-
-        private static void ApplyNameRules(string value, string requiredMessage, string lengthPrefix)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new BussinesRuleException(requiredMessage);
-            }
-
-            if (value.Trim().Length > 100)
-            {
-                throw new BussinesRuleException($"{lengthPrefix} debe tener máximo 100 caracteres.");
-            }
         }
     }
 }

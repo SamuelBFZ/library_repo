@@ -11,7 +11,8 @@ namespace sb.api.Library.Domain.Entities
         public string? Publisher { get; private set; }
         public string? Language { get; private set; }
         public string? Synopsis { get; private set; }
-        public DateTime CreatedAt { get; private set; }
+        public ICollection<Author> Authors { get; private set; } = new List<Author>();
+        public ICollection<Category> Categories { get; private set; } = new List<Category>();
         public ICollection<BookAuthor> BookAuthors { get; private set; } = new List<BookAuthor>();
         public ICollection<BookCategory> BookCategories { get; private set; } = new List<BookCategory>();
 
@@ -44,16 +45,6 @@ namespace sb.api.Library.Domain.Entities
                 throw new BussinesRuleException("El título del libro es requerido.");
             }
 
-            if (title.Trim().Length > 256)
-            {
-                throw new BussinesRuleException("El título del libro debe tener máximo 256 caracteres.");
-            }
-
-            if (isbn is not null && isbn.Length > 17)
-            {
-                throw new BussinesRuleException("El ISBN debe tener máximo 17 caracteres.");
-            }
-
             Id = id;
             Title = title.Trim();
             Isbn = isbn;
@@ -61,7 +52,56 @@ namespace sb.api.Library.Domain.Entities
             Publisher = publisher;
             Language = language;
             Synopsis = synopsis;
-            CreatedAt = DateTime.UtcNow;
+        }
+
+        public void AddAuthor(Author author, int displayOrder)
+        {
+            if (author is null)
+            {
+                throw new BussinesRuleException("El autor es requerido.");
+            }
+
+            if (displayOrder < 1)
+            {
+                throw new BussinesRuleException("El orden de visualización del autor debe ser mayor o igual a 1.");
+            }
+
+            if (BookAuthors.Any(ba => ba.AuthorId == author.Id) || Authors.Any(a => a.Id == author.Id))
+            {
+                throw new BussinesRuleException("El autor ya está asociado al libro.");
+            }
+
+            BookAuthors.Add(new BookAuthor(Id, author.Id, displayOrder));
+            Authors.Add(author);
+        }
+
+        public void AddCategory(Category category)
+        {
+            if (category is null)
+            {
+                throw new BussinesRuleException("La categoría es requerida.");
+            }
+
+            if (BookCategories.Any(bc => bc.CategoryId == category.Id) || Categories.Any(c => c.Id == category.Id))
+            {
+                throw new BussinesRuleException("La categoría ya está asociada al libro.");
+            }
+
+            BookCategories.Add(new BookCategory(Id, category.Id));
+            Categories.Add(category);
+        }
+
+        public void EnsureHasAuthorsAndCategories()
+        {
+            if (Authors.Count == 0 && BookAuthors.Count == 0)
+            {
+                throw new BussinesRuleException("El libro debe tener al menos un autor.");
+            }
+
+            if (Categories.Count == 0 && BookCategories.Count == 0)
+            {
+                throw new BussinesRuleException("El libro debe pertenecer a al menos una categoría.");
+            }
         }
     }
 }
