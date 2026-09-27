@@ -3,6 +3,7 @@ using sb.api.Library.Persistence;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
@@ -17,5 +18,7 @@ if (app.Environment.IsDevelopment())
 await DatabaseInitializer.MigrateAndSeedAsync(app.Services);
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();
